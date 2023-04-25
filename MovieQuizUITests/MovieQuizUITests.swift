@@ -61,9 +61,18 @@ final class MovieQuizUITests: XCTestCase {
     }
     
     
-    func testLabel() {
+    func testChangeTextLabelYes() {
         sleep(3)
         app.buttons["Yes"].tap()
+        sleep(3)
+        let indexLabel = app.staticTexts["Index"]
+        XCTAssertEqual(indexLabel.label, "2/10")
+    }
+    
+    
+    func testChangeTextLabelNo() {
+        sleep(3)
+        app.buttons["No"].tap()
         sleep(3)
         let indexLabel = app.staticTexts["Index"]
         XCTAssertEqual(indexLabel.label, "2/10")
