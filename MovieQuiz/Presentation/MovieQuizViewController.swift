@@ -10,12 +10,14 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet weak private var activityIndicator: UIActivityIndicatorView!
     
     private var presenter: MovieQuizPresenter!
+    private var alertPresenter: AlertPresenterProtocol?
 
         // MARK: - Lifecycle
 
         override func viewDidLoad() {
             super.viewDidLoad()
-
+            
+            alertPresenter = AlertPresenter(delegate: self)
             presenter = MovieQuizPresenter(viewController: self)
 
             imageView.layer.cornerRadius = 20
@@ -45,20 +47,13 @@ final class MovieQuizViewController: UIViewController {
         func show(quiz result: AlertModel) {
             let message = presenter.makeResultsMessage()
 
-            let alert = UIAlertController(
+            let alert = AlertModel(
                 title: result.title,
                 message: message,
-                preferredStyle: .alert)
+                buttonText: result.buttonText)
 
-                let action = UIAlertAction(title: result.buttonText, style: .default) { [weak self] _ in
-                    guard let self = self else { return }
-
-                    self.presenter.restartGame()
-                }
-
-            alert.addAction(action)
-
-            self.present(alert, animated: true, completion: nil)
+            alertPresenter?.showAlert(alertFinish: alert)
+            self.presenter.restartGame()
         }
 
         func highlightImageBorder(isCorrectAnswer: Bool) {
@@ -79,20 +74,14 @@ final class MovieQuizViewController: UIViewController {
 
         func showNetworkError(message: String) {
             hideLoadingIndicator()
-
-            let alert = UIAlertController(
+            
+            let alert = AlertModel(
                 title: "Ошибка",
                 message: message,
-                preferredStyle: .alert)
+                buttonText: "Попробовать ещё раз")
 
-                let action = UIAlertAction(title: "Попробовать ещё раз",
-                style: .default) { [weak self] _ in
-                    guard let self = self else { return }
-
-                    self.presenter.restartGame()
-                }
-
-            alert.addAction(action)
+            alertPresenter?.showAlert(alertFinish: alert)
+            self.presenter.restartGame()
         }
     }
 
